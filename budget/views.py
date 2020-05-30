@@ -118,6 +118,7 @@ def actionUpdate(request, pk):
       serializer.save()
 
    return Response(serializer.data)
+   
 
 @api_view(['DELETE'])
 def actionDelete(request, pk):
