@@ -90,10 +90,10 @@ def actionList(request):
 
    return Response(serializer.data)
 
+
 @api_view(['GET'])
 def actionDetail(request, pk):
    budget = Budget.objects.get(id=pk)
-   print("sfsdfsd" , budget)
    serializer = BudgetSerializer(budget, many=False)
 
    return Response(serializer.data)
@@ -107,5 +107,25 @@ def actionCreate(request):
       serializer.save()
 
    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+def actionUpdate(request, pk):
+   budget = Budget.objects.get(id=pk)
+   serializer = BudgetSerializer(instance=budget, data=request.data)
+
+   if serializer.is_valid():
+      serializer.save()
+
+   return Response(serializer.data)
+   
+
+@api_view(['DELETE'])
+def actionDelete(request, pk):
+   budget = Budget.objects.get(id=pk)
+   
+   budget.delete()
+
+   return Response("Data berhasil dihapus")
 
 
