@@ -2,3 +2,7 @@
 db.sqlite3
 manage.py
 budget/__pycache__
+budget/migrations
+BudgetAppBismillah/__pycache__
+notes/__pycache__
+notes/migrations
