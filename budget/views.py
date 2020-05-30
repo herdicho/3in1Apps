@@ -119,4 +119,12 @@ def actionUpdate(request, pk):
 
    return Response(serializer.data)
 
+@api_view(['DELETE'])
+def actionDelete(request, pk):
+   budget = Budget.objects.get(id=pk)
+   
+   budget.delete()
+
+   return Response("Data berhasil dihapus")
+
 
