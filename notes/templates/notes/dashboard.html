@@ -1,0 +1,114 @@
+{% extends 'notes/main.html' %}
+
+{% block content %}
+
+  <div class="row mt-4">
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <h5 class="ml-2">Topic Notes List</h5>
+            <a href="{% url 'create_topic' %}" class="btn btn-sm btn-primary ml-4">Add New Topic</a>
+          </div>
+          <table class="table table-sm mt-2" id="title_table">
+            <tr>
+              <th>Topic</th>
+              <th>Add New Notes</th>
+            </tr>
+            
+            {% for topic in topicsPage %}
+            <tr>
+              <td>{{topic.topic}}</td>
+              <td><a class="btn btn-sm btn-info" href="{% url 'create_note' topic.id %}">Add New Notes</a></td>
+            </tr> 
+            {% endfor %}
+          </table>
+          
+          {% if topicsPage.has_other_pages %}
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-left">
+                {% if topicsPage.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ topicsPage.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                {% endif %}
+                {% for i in topicsPage.paginator.page_range %}
+                  {% if topicsPage.number == i %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
+                  {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                  {% if topicsPage.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ topicsPage.next_page_number }}">&raquo;</a></li>
+                  {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                  {% endif %}
+              </ul>
+            </nav>
+          {% endif %}
+      
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-8">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="text-center"> Last 5 Notes Added </h3>
+          <table class="table table-sm" id="title_table">
+            <tr>
+              <th>Topic</th>
+              <th>Title</th>
+              <th>Contents</th>
+            </tr>
+            
+            {% for note in last5Notes %}
+            <tr>
+              <td>{{note.topic}}</td>
+              <td>{{note.title|truncatewords:50}}</td>
+              <td>{{note.notes|truncatewords:10}}</td>
+            </tr> 
+            {% endfor %}
+          </table>  
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    {% for note in notes %}
+      <div class="col-sm-4 mt-4">
+        {% if note.clear %}
+        <div class="card bg-success card-note">
+        {% else %}
+        <div class="card bg-warning card-note">
+        {% endif %}
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-8">
+                <h5 class="card-title">{{note.topic}}</h5>
+              </div>
+              <div class="col">
+               <a href="{% url 'update_clear_status' note.id %}" class="btn btn-primary btn-sm btn-note">
+                  {% if note.clear %}
+                    Unclear
+                  {%else%}
+                    Clear
+                  {%endif%}
+                </a>
+              </div>
+            </div>
+            <hr>
+            <h6>{{note.title}}</h6>
+            <hr>
+              <p class="card-text">{{note.notes|linebreaksbr|truncatewords:50}}</p>
+            <hr>
+              <a href="{% url 'update_note' note.id %}" class="btn btn-primary ml-3">Update / See Details</a>
+              <a href="{% url 'delete_note' note.id %}" class="btn btn-primary ml-3">Delete</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>  
+
+{% endblock %}

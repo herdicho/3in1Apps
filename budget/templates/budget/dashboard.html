@@ -1,0 +1,139 @@
+{% extends 'budget/main.html' %}
+
+{% block content %}
+
+{% load crispy_forms_tags %}
+
+    <div class="container mt-3">
+      <div class="row">
+        <div class="col-4">
+          <table class="table table table-bordered mt-2" id="title_table">
+            <tr class="bg-dark text-white"> 
+              <th>Month Year</th>
+              <th class="text-center">Details</th>
+            </tr>
+            
+            {% for monthYear in monthYearPage %}
+            <tr>
+              <td style="width:200px">{{monthYear.monthYear}}</td>
+              <td style="width:100px"><a class="btn btn-sm btn-info ml-3" href="#">Details</a></td>
+            </tr> 
+            {% endfor %}
+          </table>
+
+          {% if monthYearPage.has_other_pages %}
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-left">
+                {% if monthYearPage.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ monthYearPage.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                {% endif %}
+                {% for i in monthYearPage.paginator.page_range %}
+                  {% if monthYearPage.number == i %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
+                  {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                  {% if monthYearPage.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ monthYearPage.next_page_number }}">&raquo;</a></li>
+                  {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                  {% endif %}
+              </ul>
+            </nav>
+          {% endif %}
+
+        </div>
+        
+        <div class="col-8">
+          <table class="table table-bordered table-dark">
+            <thead>
+              <tr>
+                <th scope="col">Aksi</th>
+                <th scope="col">Bulan / Tahun</th>
+                <th scope="col">Status</th>
+                <th scope="col">Total Biaya</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for action in actions %}
+                {% if action.status == "Pemasukan" %}
+                  <tr class="table-success text-dark">
+                    <td>{{action.namaAksi}}</td>
+                    <td>{{action.monthYear}}</td>
+                    <td>{{action.status}}</td>
+                    <td>{{action.totalBiaya}}</td>
+                  </tr> 
+                {% else %}
+                  <tr class="table-danger text-dark">
+                    <td>{{action.namaAksi}}</td>
+                    <td>{{action.monthYear}}</td>
+                    <td>{{action.status}}</td>
+                    <td>{{action.totalBiaya}}</td>
+                  </tr> 
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-4">
+          <button class="btn btn-sm btn-info mb-2 m-*-auto" href="#" id="addAction"> Tambah Aksi Baru </button>
+          <div class="card card-body bg-light mt-3 mb-3 hide" id="cardAction">
+            <h5>Tambah Pemasukan / Pengeluaran</h5>
+            <hr>
+            <form action="" method='POST'>
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input class="btn btn-info mt-3" type="submit" name="submit">
+            </form>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+            <div class="card-header">Total Pemasukan</div>
+            <div class="card-body">
+              <h5>Rp. {{totalPemasukan}}</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+            <div class="card-header">Total Pengeluaran</div>
+            <div class="card-body">
+              <h5>Rp. {{totalPengeluaran}}</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+            <div class="card-header">Balance</div>
+            <div class="card-body">
+              <h5>Rp. {{balance}}</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-2">
+        <div class="col-12 border border-primary" style="height: 200px;">
+
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-12 border border-warning" style="height: 200px;">
+
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-12 border border-danger" style="height: 200px;">
+
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
