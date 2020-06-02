@@ -69,6 +69,22 @@ def getTotalPengeluaran():
 
    return totalPengeluaran
 
+def actionUpdateFrontEnd(request, pk):
+   budget = Budget.objects.get(id=pk)
+   form = BudgetForm(instance=budget)
+
+   if request.method == 'POST':
+      form = BudgetForm(request.POST, instance=budget)
+      if form.is_valid():
+         form.save()
+         return redirect('/budget')
+
+   context = {
+      'form' : form
+   }
+
+   return render(request, 'budget/update_action.html', context)
+
 
 @api_view(['GET'])
 def apiOverview(request):
