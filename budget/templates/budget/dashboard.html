@@ -7,7 +7,7 @@
     <div class="container mt-3">
       <div class="row">
         <div class="col-4">
-          <table class="table table table-bordered mt-2" id="title_table">
+          <table class="table table-bordered mt-2" id="title_table">
             <tr class="bg-dark text-white"> 
               <th>Month Year</th>
               <th class="text-center">Details</th>
@@ -16,7 +16,7 @@
             {% for monthYear in monthYearPage %}
             <tr>
               <td style="width:200px">{{monthYear.monthYear}}</td>
-              <td style="width:100px"><a href="{% url 'action_detail' monthYear.id %}" class="btn btn-info">Details</a></td>
+              <td style="width:100px"><a href="{% url 'action_detail' monthYear.id %}" class="btn btn-sm btn-info ml-3">Details</a></td>
             </tr> 
             {% endfor %}
           </table>

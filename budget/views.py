@@ -13,7 +13,7 @@ def dashboard(request):
    monthYear = MonthYear.objects.all()
    actions = Budget.objects.all().order_by('-date_created')[:5]
 
-   paginator = Paginator(monthYear, 5)
+   paginator = Paginator(monthYear, 6)
    page = request.GET.get('page')
    try:
       monthYearPage = paginator.page(page)
@@ -29,7 +29,6 @@ def dashboard(request):
          form.save()
          return redirect('/budget/')
 
-   
    totalPemasukan = getTotalPemasukan()
    totalPengeluaran = getTotalPengeluaran()
    balance = totalPemasukan - totalPengeluaran
@@ -103,12 +102,41 @@ def actionDetailPerMonth(request, pk):
    monthYear = MonthYear.objects.get(id=pk)
    listActions = Budget.objects.filter(monthYear=monthYear)
 
+   totalPemasukan = getTotalPemasukanPerMonth(listActions)
+   totalPengeluaran = getTotalPengeluaranPerMonth(listActions)
+   balance = totalPemasukan - totalPengeluaran
+   
+   totalPemasukan = '{0:,}'.format(totalPemasukan)
+   totalPengeluaran = '{0:,}'.format(totalPengeluaran)
+   balance = '{0:,}'.format(balance)
+
    context = {
       'monthYear' : monthYear,
-      'listActions' : listActions
+      'listActions' : listActions,
+      'totalPemasukan':totalPemasukan,
+      'totalPengeluaran':totalPengeluaran,
+      'balance':balance
    }
 
    return render(request, 'budget/detail_action.html', context)
+
+def getTotalPemasukanPerMonth(actionPerBulan):
+   daftarPemasukan = actionPerBulan.filter(status="Pemasukan")
+
+   totalPemasukan = 0
+   for pemasukan in daftarPemasukan.values_list('totalBiaya', flat=True):
+      totalPemasukan += pemasukan
+
+   return totalPemasukan
+
+def getTotalPengeluaranPerMonth(actionPerBulan):
+   daftarPengeluaran = actionPerBulan.filter(status="Pengeluaran")
+
+   totalPengeluaran = 0
+   for pengeluaran in daftarPengeluaran.values_list('totalBiaya', flat=True):
+      totalPengeluaran += pengeluaran
+
+   return totalPengeluaran
 
 
 @api_view(['GET'])
