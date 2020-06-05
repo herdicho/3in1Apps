@@ -110,12 +110,20 @@ def actionDetailPerMonth(request, pk):
    totalPengeluaran = '{0:,}'.format(totalPengeluaran)
    balance = '{0:,}'.format(balance)
 
+   form = BudgetForm(initial={'monthYear' : monthYear})
+   if request.method == 'POST':
+      form = BudgetForm(request.POST)
+      if form.is_valid():
+         form.save()
+         return redirect('/budget/detail/' + str(monthYear.id))
+
    context = {
       'monthYear' : monthYear,
       'listActions' : listActions,
       'totalPemasukan':totalPemasukan,
       'totalPengeluaran':totalPengeluaran,
-      'balance':balance
+      'balance':balance,
+      'form':form
    }
 
    return render(request, 'budget/detail_action.html', context)

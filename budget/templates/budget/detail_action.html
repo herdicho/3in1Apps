@@ -1,6 +1,8 @@
 {% extends 'budget/main.html' %}
+
 {% block content %}
 
+{% load crispy_forms_tags %}
 
 <div class="row justify-content-center">
     <div class="col-md-8 mt-5">
@@ -71,7 +73,24 @@
             </div>
         </div>
     </div>
-</div>      
+</div>   
+<div class="row justify-content-center">
+    <div class="col-md-4 mt-2">
+        <button class="btn btn-lg btn-info mb-2 m-*-auto" href="#" id="addAction"> Tambah Aksi Baru </button>
+          <div class="card card-body bg-light mt-3 mb-3 hide" id="cardAction">
+            <h5>Tambah Pemasukan / Pengeluaran</h5>
+            <hr>
+            <form action="" method='POST'>
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input class="btn btn-info mt-3" type="submit" name="submit">
+            </form>
+          </div>
+    </div>
+    <div class="col-md-4 mt-2">
+        tralala
+    </div>
+</div>    
 
 
 

@@ -34,27 +34,3 @@ class BudgetForm(ModelForm):
                 }
             ),
         }
-
-'''
-class NewOrderForm(ModelForm):
-    class Meta:
-        model = Order
-        fields = ['customer', 'product', 'status']
-        widgets = {
-            'customer' : forms.Select(
-                attrs={
-                    'class' : 'form-control mb-2',
-                }
-            ),
-            'product' : forms.Select(
-                attrs={
-                    'class' : 'form-control mb-2'
-                }
-            ),
-            'status' : forms.Select(
-                attrs={
-                    'class' : 'form-control mb-2'
-                }
-            ),
-        }
-'''
