@@ -24,7 +24,7 @@
                             <td>{{listAction.status}}</td>
                             <td>{{listAction.totalBiaya}}</td>
                             <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-info">Update</a></td>
-                            <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-danger">Delete</a></td>
+                            <td><a href="{% url 'action_delete_frontend' listAction.id %}" class="btn btn-danger">Delete</a></td>
                             </tr> 
                     {% else %}
                         <tr class="table-danger text-dark">
@@ -33,7 +33,7 @@
                             <td>{{listAction.status}}</td>
                             <td>{{listAction.totalBiaya}}</td>
                             <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-info">Update</a></td>
-                            <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-danger">Delete</a></td>
+                            <td><a href="{% url 'action_delete_frontend' listAction.id %}" class="btn btn-danger">Delete</a></td>
                         </tr> 
                     {% endif %}
               {% endfor %}

@@ -74,17 +74,29 @@ def actionUpdateFrontEnd(request, pk):
    budget = Budget.objects.get(id=pk)
    form = BudgetForm(instance=budget)
 
+   monthYear = MonthYear.objects.get(monthYear=budget.monthYear)
+
    if request.method == 'POST':
       form = BudgetForm(request.POST, instance=budget)
       if form.is_valid():
          form.save()
-         return redirect('/budget')
+         return redirect('/budget/detail/' + str(monthYear.id))
 
    context = {
       'form' : form
    }
 
    return render(request, 'budget/update_action.html', context)
+
+
+def actionDeleteFrontEnd(request, pk):
+   actionDelete = Budget.objects.get(id=pk)
+   actionDelete.delete()
+   monthYear = MonthYear.objects.get(monthYear=actionDelete.monthYear)
+   
+   redirectLink = '/budget/detail/' + str(monthYear.id)
+   
+   return redirect(redirectLink)
 
 
 def actionDetailPerMonth(request, pk):
