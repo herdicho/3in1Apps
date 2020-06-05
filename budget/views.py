@@ -70,6 +70,47 @@ def getTotalPengeluaran():
    return totalPengeluaran
 
 
+def actionUpdateFrontEnd(request, pk):
+   budget = Budget.objects.get(id=pk)
+   form = BudgetForm(instance=budget)
+
+   monthYear = MonthYear.objects.get(monthYear=budget.monthYear)
+
+   if request.method == 'POST':
+      form = BudgetForm(request.POST, instance=budget)
+      if form.is_valid():
+         form.save()
+         return redirect('/budget/detail/' + str(monthYear.id))
+
+   context = {
+      'form' : form
+   }
+
+   return render(request, 'budget/update_action.html', context)
+
+
+def actionDeleteFrontEnd(request, pk):
+   actionDelete = Budget.objects.get(id=pk)
+   actionDelete.delete()
+   monthYear = MonthYear.objects.get(monthYear=actionDelete.monthYear)
+   
+   redirectLink = '/budget/detail/' + str(monthYear.id)
+   
+   return redirect(redirectLink)
+
+
+def actionDetailPerMonth(request, pk):
+   monthYear = MonthYear.objects.get(id=pk)
+   listActions = Budget.objects.filter(monthYear=monthYear)
+
+   context = {
+      'monthYear' : monthYear,
+      'listActions' : listActions
+   }
+
+   return render(request, 'budget/detail_action.html', context)
+
+
 @api_view(['GET'])
 def apiOverview(request):
    api_urls = {

@@ -16,7 +16,7 @@
             {% for monthYear in monthYearPage %}
             <tr>
               <td style="width:200px">{{monthYear.monthYear}}</td>
-              <td style="width:100px"><a class="btn btn-sm btn-info ml-3" href="#">Details</a></td>
+              <td style="width:100px"><a href="{% url 'action_detail' monthYear.id %}" class="btn btn-info">Details</a></td>
             </tr> 
             {% endfor %}
           </table>
@@ -48,7 +48,7 @@
         </div>
         
         <div class="col-8">
-          <table class="table table-bordered table-dark">
+          <table class="table table-bordered table-dark mt-2">
             <thead>
               <tr>
                 <th scope="col">Aksi</th>
@@ -82,7 +82,7 @@
 
       <div class="row">
         <div class="col-4">
-          <button class="btn btn-sm btn-info mb-2 m-*-auto" href="#" id="addAction"> Tambah Aksi Baru </button>
+          <button class="btn btn-lg btn-info mb-2 m-*-auto" href="#" id="addAction"> Tambah Aksi Baru </button>
           <div class="card card-body bg-light mt-3 mb-3 hide" id="cardAction">
             <h5>Tambah Pemasukan / Pengeluaran</h5>
             <hr>
