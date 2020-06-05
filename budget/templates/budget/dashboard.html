@@ -16,7 +16,7 @@
             {% for monthYear in monthYearPage %}
             <tr>
               <td style="width:200px">{{monthYear.monthYear}}</td>
-              <td style="width:100px"><a class="btn btn-sm btn-info ml-3" href="#">Details</a></td>
+              <td style="width:100px"><a href="{% url 'action_detail' monthYear.id %}" class="btn btn-info">Details</a></td>
             </tr> 
             {% endfor %}
           </table>
@@ -48,14 +48,13 @@
         </div>
         
         <div class="col-8">
-          <table class="table table-bordered table-dark">
+          <table class="table table-bordered table-dark mt-2">
             <thead>
               <tr>
                 <th scope="col">Aksi</th>
                 <th scope="col">Bulan / Tahun</th>
                 <th scope="col">Status</th>
                 <th scope="col">Total Biaya</th>
-                <th scope="col">Update</th>
               </tr>
             </thead>
             <tbody>
@@ -66,7 +65,6 @@
                     <td>{{action.monthYear}}</td>
                     <td>{{action.status}}</td>
                     <td>{{action.totalBiaya}}</td>
-                    <td><a href="{% url 'action_update_frontend' action.id %}" class="btn btn-info">Update</a></td>
                   </tr> 
                 {% else %}
                   <tr class="table-danger text-dark">
@@ -74,7 +72,6 @@
                     <td>{{action.monthYear}}</td>
                     <td>{{action.status}}</td>
                     <td>{{action.totalBiaya}}</td>
-                    <td><a href="{% url 'action_update_frontend' action.id %}" class="btn btn-info">Update</a></td>
                   </tr> 
                 {% endif %}
               {% endfor %}

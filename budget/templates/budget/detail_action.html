@@ -1,0 +1,46 @@
+{% extends 'budget/main.html' %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 mt-5">
+        <h3>List Detail {{monthYear}} </h3>
+        <table class="table table-bordered table-dark mt-4">
+            <thead>
+                <tr>
+                    <th scope="col">Aksi</th>
+                    <th scope="col">Bulan / Tahun</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Total Biaya</th>
+                    <th scope="col">Update</th>
+                    <th scope="col">Delete</th>
+                 </tr>
+            </thead>
+            <tbody>
+                {% for listAction in listActions %}
+                    {% if listAction.status == "Pemasukan" %}
+                        <tr class="table-success text-dark">
+                            <td>{{listAction.namaAksi}}</td>
+                            <td>{{listAction.monthYear}}</td>
+                            <td>{{listAction.status}}</td>
+                            <td>{{listAction.totalBiaya}}</td>
+                            <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-info">Update</a></td>
+                            <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-danger">Delete</a></td>
+                            </tr> 
+                    {% else %}
+                        <tr class="table-danger text-dark">
+                            <td>{{listAction.namaAksi}}</td>
+                            <td>{{listAction.monthYear}}</td>
+                            <td>{{listAction.status}}</td>
+                            <td>{{listAction.totalBiaya}}</td>
+                            <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-info">Update</a></td>
+                            <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-danger">Delete</a></td>
+                        </tr> 
+                    {% endif %}
+              {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}

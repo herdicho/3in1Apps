@@ -69,6 +69,7 @@ def getTotalPengeluaran():
 
    return totalPengeluaran
 
+
 def actionUpdateFrontEnd(request, pk):
    budget = Budget.objects.get(id=pk)
    form = BudgetForm(instance=budget)
@@ -84,6 +85,18 @@ def actionUpdateFrontEnd(request, pk):
    }
 
    return render(request, 'budget/update_action.html', context)
+
+
+def actionDetailPerMonth(request, pk):
+   monthYear = MonthYear.objects.get(id=pk)
+   listActions = Budget.objects.filter(monthYear=monthYear)
+
+   context = {
+      'monthYear' : monthYear,
+      'listActions' : listActions
+   }
+
+   return render(request, 'budget/detail_action.html', context)
 
 
 @api_view(['GET'])

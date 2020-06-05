@@ -26,6 +26,11 @@ td {
     font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
+h3 {
+    font-size: 20px !important;
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+}
+
 #page-container {
     position: relative;
     min-height: 100vh;
