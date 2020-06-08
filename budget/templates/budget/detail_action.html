@@ -92,33 +92,52 @@
 </div>  
 
 <script type="text/javascript">
-    console.log("{{totalPemasukan}}")
-    console.log("{{totalPengeluaran}}")
-    console.log("{{balance}}")
-
     var pemasukan = parseFloat("{{totalPemasukan}}".replace(/,/g, ''))
     var pengeluaran = parseFloat("{{totalPengeluaran}}".replace(/,/g, ''))
-    var balance = parseFloat("{{balance}}".replace(/,/g, ''))
+    var balance = pemasukan - pengeluaran
 
-    console.log(pemasukan)
-    console.log(pengeluaran)
-    console.log(balance)
-    
+    if (balance < 0)
+        balance = 0
+
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'pie',
         data: {
-        labels: ["Pendapatan", "Pengeluaran", "Balance"],
+        labels: ["Sisa Dana", "Pengeluaran"],
         datasets: [{
             label: "Population (millions)",
-            backgroundColor: ["rgb(63, 191, 136)", "rgb(206, 28, 54)", "rgb(16, 154, 218)"],
-            data: [pemasukan, pengeluaran, balance]
+            backgroundColor: ["rgb(63, 191, 136)", "rgb(206, 28, 54)"],
+            data: [balance, pengeluaran]
         }]
         },
         options: {
         title: {
             display: true,
             text: 'Grafik Pendapatan Pengeluaran {{monthYear}}'
+        },
+        plugins: {
+            labels: {
+            // render 'label', 'value', 'percentage', 'image' or custom function, default is 'percentage'
+            render: 'percentage',
+
+            // precision for percentage, default is 0
+            precision: 0,
+
+            // identifies whether or not labels of value 0 are displayed, default is false
+            showZero: true,
+
+            // font size, default is defaultFontSize
+            fontSize: 24,
+
+            // font color, can be color array for each data or function for dynamic color, default is defaultFontColor
+            fontColor: 'black',
+
+            // font style, default is defaultFontStyle
+            fontStyle: 'normal',
+
+            // font family, default is defaultFontFamily
+            fontFamily: '"Lucida Console", Monaco, monospace'
+            }
         }
         }
         });
