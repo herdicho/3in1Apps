@@ -11,7 +11,7 @@ from rest_framework.response import Response
 # Create your views here.
 def dashboard(request):
    monthYear = MonthYear.objects.all()
-   actions = Budget.objects.all().order_by('-date_created')[:5]
+   actions = Budget.objects.all().order_by('-date_created')[:7]
 
    paginator = Paginator(monthYear, 6)
    page = request.GET.get('page')
@@ -204,5 +204,4 @@ def actionDelete(request, pk):
    budget.delete()
 
    return Response("Data berhasil dihapus")
-
 
