@@ -37,12 +37,6 @@ def dashboard(request):
    totalPengeluaran = '{0:,}'.format(totalPengeluaran)
    balance = '{0:,}'.format(balance)
 
-   '''
-   monthYearList = {}
-   for e in monthYear:
-      monthYearList[e.monthYear] = getTotalPengeluaranPerMonthByMonthYearName(e.monthYear)
-   '''
-
    monthYearList = []
    for monthNow in monthYear:
       monthYearList.append(monthNow.monthYear)
