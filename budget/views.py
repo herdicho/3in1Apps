@@ -37,6 +37,22 @@ def dashboard(request):
    totalPengeluaran = '{0:,}'.format(totalPengeluaran)
    balance = '{0:,}'.format(balance)
 
+   '''
+   monthYearList = {}
+   for e in monthYear:
+      monthYearList[e.monthYear] = getTotalPengeluaranPerMonthByMonthYearName(e.monthYear)
+   '''
+
+   monthYearList = []
+   for monthNow in monthYear:
+      monthYearList.append(monthNow.monthYear)
+
+   monthYearPengeluaran = []
+   for monthNow in monthYear:
+      monthYearPengeluaran.append(getTotalPengeluaranPerMonthByMonthYearName(monthNow))
+
+   print(monthYearList, '\n')
+
    context = {
       'monthYear' : monthYear,
       'actions' : actions,
@@ -45,6 +61,8 @@ def dashboard(request):
       'totalPemasukan':totalPemasukan,
       'totalPengeluaran':totalPengeluaran,
       'balance':balance,
+      'monthYearList':monthYearList,
+      'monthYearPengeluaran':monthYearPengeluaran
    }
 
    return render(request, 'budget/dashboard.html', context)
@@ -68,6 +86,20 @@ def getTotalPengeluaran():
 
    return totalPengeluaran
 
+def getTotalPengeluaranPerMonthByMonthYearName(monthYearName):
+   idMonthYear = getIDMonthYearByMonthYearName(monthYearName)
+   monthYearAll = Budget.objects.filter(monthYear = idMonthYear)
+   monthYearPengeluaran = monthYearAll.filter(status = "Pengeluaran")
+  
+   pengeluaran = 0
+   for month in monthYearPengeluaran:
+      pengeluaran += month.totalBiaya
+   
+   return pengeluaran
+
+def getIDMonthYearByMonthYearName(monthYearName):
+   idMonthYear = MonthYear.objects.get(monthYear = monthYearName)
+   return idMonthYear.id
 
 def actionUpdateFrontEnd(request, pk):
    budget = Budget.objects.get(id=pk)
