@@ -43,9 +43,11 @@ def dashboard(request):
 
    monthYearPengeluaran = []
    for monthNow in monthYear:
-      monthYearPengeluaran.append(getTotalPengeluaranPerMonthByMonthYearName(monthNow))
+      monthYearPengeluaran.append(getTotalPemasukanPengeluaranPerMonthByMonthYearName(monthNow, "Pengeluaran"))
 
-   print(monthYearList, '\n')
+   monthYearPemasukan = []
+   for monthNow in monthYear:
+      monthYearPemasukan.append(getTotalPemasukanPengeluaranPerMonthByMonthYearName(monthNow, "Pemasukan"))
 
    context = {
       'monthYear' : monthYear,
@@ -56,7 +58,8 @@ def dashboard(request):
       'totalPengeluaran':totalPengeluaran,
       'balance':balance,
       'monthYearList':monthYearList,
-      'monthYearPengeluaran':monthYearPengeluaran
+      'monthYearPengeluaran':monthYearPengeluaran,
+      'monthYearPemasukan':monthYearPemasukan,
    }
 
    return render(request, 'budget/dashboard.html', context)
@@ -80,10 +83,10 @@ def getTotalPengeluaran():
 
    return totalPengeluaran
 
-def getTotalPengeluaranPerMonthByMonthYearName(monthYearName):
+def getTotalPemasukanPengeluaranPerMonthByMonthYearName(monthYearName, status):
    idMonthYear = getIDMonthYearByMonthYearName(monthYearName)
    monthYearAll = Budget.objects.filter(monthYear = idMonthYear)
-   monthYearPengeluaran = monthYearAll.filter(status = "Pengeluaran")
+   monthYearPengeluaran = monthYearAll.filter(status = status)
   
    pengeluaran = 0
    for month in monthYearPengeluaran:
