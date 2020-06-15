@@ -96,29 +96,39 @@
           </div>
         </div>
         <div class="col">
-          <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
-            <div class="card-header">Total Pemasukan</div>
-            <div class="card-body">
-              <h5>Rp. {{totalPemasukan}}</h5>
+          <div class="row">
+            <div class="col">
+              <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                <div class="card-header">Total Pemasukan</div>
+                <div class="card-body">
+                  <h5>Rp. {{totalPemasukan}}</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+                <div class="card-header">Total Pengeluaran</div>
+                <div class="card-body">
+                  <h5>Rp. {{totalPengeluaran}}</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">Balance</div>
+                <div class="card-body">
+                  <h5>Rp. {{balance}}</h5>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col">
-          <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
-            <div class="card-header">Total Pengeluaran</div>
-            <div class="card-body">
-              <h5>Rp. {{totalPengeluaran}}</h5>
-            </div>
+          <div class="row justify-content-center">
+            <div><canvas id="pie-chart" width="450" height="450"></canvas></div>
           </div>
         </div>
-        <div class="col">
-          <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
-            <div class="card-header">Balance</div>
-            <div class="card-body">
-              <h5>Rp. {{balance}}</h5>
-            </div>
-          </div>
-        </div>
+        
+        
+        
       </div>
 
       <div class="row mt-2">
@@ -207,6 +217,56 @@
           }]
         }
     });
+
+    var pemasukan = parseFloat("{{totalPemasukan}}".replace(/,/g, ''))
+    var pengeluaran = parseFloat("{{totalPengeluaran}}".replace(/,/g, ''))
+    var balance = pemasukan - pengeluaran
+
+    if (balance < 0)
+        balance = 0
+
+    var ctx = document.getElementById('pie-chart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+        labels: ["Sisa Dana", "Pengeluaran"],
+        datasets: [{
+            label: "Population (millions)",
+            backgroundColor: ["rgb(63, 191, 136)", "rgb(206, 28, 54)"],
+            data: [balance, pengeluaran]
+        }]
+        },
+        options: {
+        title: {
+            display: true,
+            text: 'Grafik Pendapatan Pengeluaran Keseluruhan'
+        },
+        plugins: {
+            labels: {
+            // render 'label', 'value', 'percentage', 'image' or custom function, default is 'percentage'
+            render: 'percentage',
+
+            // precision for percentage, default is 0
+            precision: 0,
+
+            // identifies whether or not labels of value 0 are displayed, default is false
+            showZero: true,
+
+            // font size, default is defaultFontSize
+            fontSize: 24,
+
+            // font color, can be color array for each data or function for dynamic color, default is defaultFontColor
+            fontColor: 'black',
+
+            // font style, default is defaultFontStyle
+            fontStyle: 'normal',
+
+            // font family, default is defaultFontFamily
+            fontFamily: '"Lucida Console", Monaco, monospace'
+            }
+        }
+        }
+        });
 
     </script>
 
