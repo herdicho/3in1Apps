@@ -31,6 +31,10 @@ h3 {
     font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
+p, h5, h6, .card-header {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;  
+}
+
 #page-container {
     position: relative;
     min-height: 100vh;
