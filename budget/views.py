@@ -131,6 +131,15 @@ def actionDetailPerMonth(request, pk):
    monthYear = MonthYear.objects.get(id=pk)
    listActions = Budget.objects.filter(monthYear=monthYear)
 
+   paginator = Paginator(listActions, 5)
+   page = request.GET.get('page')
+   try:
+      listActionPage = paginator.page(page)
+   except PageNotAnInteger:
+      listActionPage = paginator.page(1)
+   except EmptyPage:
+      listActionPage = paginator.page(paginator.num_pages)
+
    totalPemasukan = getTotalPemasukanPerMonth(listActions)
    totalPengeluaran = getTotalPengeluaranPerMonth(listActions)
    balance = totalPemasukan - totalPengeluaran
@@ -152,7 +161,8 @@ def actionDetailPerMonth(request, pk):
       'totalPemasukan':totalPemasukan,
       'totalPengeluaran':totalPengeluaran,
       'balance':balance,
-      'form':form
+      'form':form,
+      'listActionPage':listActionPage
    }
 
    return render(request, 'budget/detail_action.html', context)
