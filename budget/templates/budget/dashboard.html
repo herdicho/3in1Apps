@@ -140,23 +140,67 @@
 
     <script type="text/javascript">
 
+    // set font and font size
     Chart.defaults.global.defaultFontFamily = "Lato";
     Chart.defaults.global.defaultFontSize = 14;
     
+    // convert python data to javascript
+    
+    // split string to object by (,)
+    var monthYear = "{{monthYearList|safe}}".split(",");
+    var pengeluaran = "{{monthYearPengeluaran|safe}}".split(",");
+    var pemasukan = "{{monthYearPemasukan|safe}}".split(",");
+
+    // replace unused string
+    for (let i=0; i<monthYear.length; i++){
+      if (monthYear[i].includes("["))
+        monthYear[i] = monthYear[i].replace("[","")
+      if (monthYear[i].includes("]"))
+        monthYear[i] = monthYear[i].replace("]","")
+      if (monthYear[i].includes("'"))
+        monthYear[i] = monthYear[i].replace("'","")
+      if (monthYear[i].includes("'"))
+      monthYear[i] = monthYear[i].replace("'","")
+      
+      monthYear[i] = monthYear[i].trim()
+    }
+
+    // replace unused string
+    for (let i=0; i<pengeluaran.length; i++){
+      if (pengeluaran[i].includes("["))
+        pengeluaran[i] = pengeluaran[i].replace("[","")
+      if (pengeluaran[i].includes("]"))
+        pengeluaran[i] = pengeluaran[i].replace("]","")
+      
+      pengeluaran[i] = pengeluaran[i].trim()
+      pengeluaran[i] = parseInt(pengeluaran[i])
+    }
+
+    // replace unused string
+    for (let i=0; i<pemasukan.length; i++){
+      if (pemasukan[i].includes("["))
+        pemasukan[i] = pemasukan[i].replace("[","")
+      if (pemasukan[i].includes("]"))
+        pemasukan[i] = pemasukan[i].replace("]","")
+      
+      pemasukan[i] = pemasukan[i].trim()
+      pemasukan[i] = parseInt(pemasukan[i])
+    }
+ 
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'horizontalBar',
         data: {
-          labels: {{ monthYearList|safe }},
+          labels: monthYear,
           datasets: [{
             label: 'Total Pengeluaran tiap bulan',
-            data: {{ monthYearPengeluaran|safe }},
+            data: pengeluaran,
             backgroundColor: "rgb(230, 0, 0)",
             borderColor: "rgb(102, 0, 0)",
             borderWidth: 1
           },{
             label: 'Total Pemasukan tiap bulan',
-            data: {{ monthYearPemasukan|safe }},
+            data: pemasukan,
             backgroundColor: "rgb(66, 245, 203)",
             borderColor: "rgb(102, 0, 0)",
             borderWidth: 1
