@@ -4,6 +4,7 @@ from .models import *
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .forms import BudgetForm
 from .serializers import BudgetSerializer
+from .filters import BudgetFilter
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -128,11 +129,22 @@ def actionDeleteFrontEnd(request, pk):
 
 
 def actionDetailPerMonth(request, pk):
+   # get id details bulan yang dipih user
    monthYear = MonthYear.objects.get(id=pk)
+
+   # get semua list action sesuai bulan yang dipilih user
    listActions = Budget.objects.filter(monthYear=monthYear)
 
-   paginator = Paginator(listActions, 5)
-   page = request.GET.get('page')
+   # get semua list action sesuai bulan yang dipilih user
+   listActionsFilter = Budget.objects.filter(monthYear=monthYear)
+
+   # filter data sesuai status (pemasukan / pengeluaran)
+   filterAction = BudgetFilter(request.GET, queryset=listActionsFilter)
+   listActionsFilter = filterAction.qs
+
+   # paginator
+   paginator = Paginator(listActionsFilter, 5)
+   page = request.GET.get('page', 1)
    try:
       listActionPage = paginator.page(page)
    except PageNotAnInteger:
@@ -140,14 +152,17 @@ def actionDetailPerMonth(request, pk):
    except EmptyPage:
       listActionPage = paginator.page(paginator.num_pages)
 
+   # GET total pemasukan, pengeluaran, balance per bulan   
    totalPemasukan = getTotalPemasukanPerMonth(listActions)
    totalPengeluaran = getTotalPengeluaranPerMonth(listActions)
    balance = totalPemasukan - totalPengeluaran
    
+   # format total pemasukan, pengeluaran, balance
    totalPemasukan = '{0:,}'.format(totalPemasukan)
    totalPengeluaran = '{0:,}'.format(totalPengeluaran)
    balance = '{0:,}'.format(balance)
 
+   # form untuk create transaksi baru (di bulan tersebut)
    form = BudgetForm(initial={'monthYear' : monthYear})
    if request.method == 'POST':
       form = BudgetForm(request.POST)
@@ -162,7 +177,8 @@ def actionDetailPerMonth(request, pk):
       'totalPengeluaran':totalPengeluaran,
       'balance':balance,
       'form':form,
-      'listActionPage':listActionPage
+      'listActionPage':listActionPage,
+      'filter':filterAction
    }
 
    return render(request, 'budget/detail_action.html', context)
