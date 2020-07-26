@@ -4,6 +4,8 @@
 
 {% load crispy_forms_tags %}
 
+{% load myapp_extras %}
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-10 mt-4">
@@ -115,19 +117,19 @@
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-left">
                     {% if listActionPage.has_previous %}
-                    <li class="page-item"><a class="page-link" href="?page={{ listActionPage.previous_page_number }}">&laquo;</a></li>
+                        <li class="page-item"><a class="page-link" href="{% my_url listActionPage.previous_page_number 'page' request.GET.urlencode %}">&laquo;</a></li>
                     {% else %}
-                    <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
                     {% endif %}
                     {% for i in listActionPage.paginator.page_range %}
                     {% if listActionPage.number == i %}
                         <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
                     {% else %}
-                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        <li class="page-item"><a class="page-link" href="{% my_url i 'page' request.GET.urlencode %}">{{ i }}</a></li>
                     {% endif %}
                     {% endfor %}
                     {% if listActionPage.has_next %}
-                        <li class="page-item"><a class="page-link" href="?page={{ listActionPage.next_page_number }}">&raquo;</a></li>
+                        <li class="page-item"><a class="page-link" href="{% my_url listActionPage.next_page_number 'page' request.GET.urlencode %}">&raquo;</a></li>
                     {% else %}
                         <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
                     {% endif %}
