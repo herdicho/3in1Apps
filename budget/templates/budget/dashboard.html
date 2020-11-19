@@ -1,13 +1,17 @@
 {% extends 'budget/main.html' %}
 
+{% load static %}
+
 {% block content %}
 
 {% load crispy_forms_tags %}
 
-    <div class="container mt-3">
+    <div class="container mt-5">
       <div class="row">
         <div class="col-4">
-          <table class="table table table-bordered mt-2" id="title_table">
+          <p style="text-align: center;">List Pemasukan dan Pengeluaran per Bulan</p>
+          <hr>
+          <table class="table table-bordered mt-2" id="title_table">
             <tr class="bg-dark text-white"> 
               <th>Month Year</th>
               <th class="text-center">Details</th>
@@ -16,7 +20,7 @@
             {% for monthYear in monthYearPage %}
             <tr>
               <td style="width:200px">{{monthYear.monthYear}}</td>
-              <td style="width:100px"><a href="{% url 'action_detail' monthYear.id %}" class="btn btn-info">Details</a></td>
+              <td style="width:100px"><a href="{% url 'action_detail' monthYear.id %}" class="btn btn-sm btn-info ml-3">Details</a></td>
             </tr> 
             {% endfor %}
           </table>
@@ -48,6 +52,8 @@
         </div>
         
         <div class="col-8">
+          <p style="text-align: center;">List 7 Transaksi Terakhir</p>
+          <hr>
           <table class="table table-bordered table-dark mt-2">
             <thead>
               <tr>
@@ -80,11 +86,12 @@
         </div>
       </div>
 
+      <hr>
       <div class="row">
         <div class="col-4">
-          <button class="btn btn-lg btn-info mb-2 m-*-auto" href="#" id="addAction"> Tambah Aksi Baru </button>
+          <button class="btn btn-lg btn-info mb-2 m-*-auto" href="#" id="addAction"> Tambah Transaksi Baru </button>
           <div class="card card-body bg-light mt-3 mb-3 hide" id="cardAction">
-            <h5>Tambah Pemasukan / Pengeluaran</h5>
+            <h6>Tambah Pemasukan / Pengeluaran</h6>
             <hr>
             <form action="" method='POST'>
                 {% csrf_token %}
@@ -94,46 +101,178 @@
           </div>
         </div>
         <div class="col">
-          <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
-            <div class="card-header">Total Pemasukan</div>
-            <div class="card-body">
-              <h5>Rp. {{totalPemasukan}}</h5>
+          <h5 style="text-align: center;">Total Pemasukan Pengeluaran dan Balance Keseluruhan</h5>
+          <div class="row mt-3">
+            <div class="col">
+              <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                <div class="card-header">Total Pemasukan</div>
+                <div class="card-body">
+                  <h5>Rp. {{totalPemasukan}}</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+                <div class="card-header">Total Pengeluaran</div>
+                <div class="card-body">
+                  <h5>Rp. {{totalPengeluaran}}</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">Balance</div>
+                <div class="card-body">
+                  <h5>Rp. {{balance}}</h5>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col">
-          <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
-            <div class="card-header">Total Pengeluaran</div>
-            <div class="card-body">
-              <h5>Rp. {{totalPengeluaran}}</h5>
-            </div>
+          <div class="row justify-content-center">
+            <div><canvas id="pie-chart" width="450" height="400"></canvas></div>
           </div>
-        </div>
-        <div class="col">
-          <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
-            <div class="card-header">Balance</div>
-            <div class="card-body">
-              <h5>Rp. {{balance}}</h5>
-            </div>
-          </div>
-        </div>
+        </div>  
       </div>
 
+      <hr>
       <div class="row mt-2">
-        <div class="col-12 border border-primary" style="height: 200px;">
-
-        </div>
+          <h5 class="ml-5 mb-4" style="align-items: center;">Grafik Total Pemasukan dan Pengeluaran Per Bulan</h5>
+          <div><canvas id="myChart" width="1100" height="800"></canvas></div>    
       </div>
+
       <div class="row mt-2">
         <div class="col-12 border border-warning" style="height: 200px;">
 
         </div>
       </div>
+
       <div class="row mt-2">
         <div class="col-12 border border-danger" style="height: 200px;">
 
         </div>
       </div>
     </div>
+
+    <script type="text/javascript">
+
+    // set font and font size
+    Chart.defaults.global.defaultFontFamily = "Lato";
+    Chart.defaults.global.defaultFontSize = 14;
+    
+    // convert python data to javascript
+    
+    // split string to object by (,)
+    var monthYear = "{{monthYearList|safe}}".split(",");
+    var pengeluaran = "{{monthYearPengeluaran|safe}}".split(",");
+    var pemasukan = "{{monthYearPemasukan|safe}}".split(",");
+
+    // replace unused string
+    for (let i=0; i<monthYear.length; i++){
+      if (monthYear[i].includes("["))
+        monthYear[i] = monthYear[i].replace("[","")
+      if (monthYear[i].includes("]"))
+        monthYear[i] = monthYear[i].replace("]","")
+      if (monthYear[i].includes("'"))
+        monthYear[i] = monthYear[i].replace("'","")
+      if (monthYear[i].includes("'"))
+      monthYear[i] = monthYear[i].replace("'","")
+      
+      monthYear[i] = monthYear[i].trim()
+    }
+
+    // replace unused string
+    for (let i=0; i<pengeluaran.length; i++){
+      if (pengeluaran[i].includes("["))
+        pengeluaran[i] = pengeluaran[i].replace("[","")
+      if (pengeluaran[i].includes("]"))
+        pengeluaran[i] = pengeluaran[i].replace("]","")
+      
+      pengeluaran[i] = pengeluaran[i].trim()
+      pengeluaran[i] = parseInt(pengeluaran[i])
+    }
+
+    // replace unused string
+    for (let i=0; i<pemasukan.length; i++){
+      if (pemasukan[i].includes("["))
+        pemasukan[i] = pemasukan[i].replace("[","")
+      if (pemasukan[i].includes("]"))
+        pemasukan[i] = pemasukan[i].replace("]","")
+      
+      pemasukan[i] = pemasukan[i].trim()
+      pemasukan[i] = parseInt(pemasukan[i])
+    }
+ 
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: {
+          labels: monthYear,
+          datasets: [{
+            label: 'Total Pengeluaran tiap bulan',
+            data: pengeluaran,
+            backgroundColor: "rgb(230, 0, 0)",
+            borderColor: "rgb(102, 0, 0)",
+            borderWidth: 1
+          },{
+            label: 'Total Pemasukan tiap bulan',
+            data: pemasukan,
+            backgroundColor: "rgb(66, 245, 203)",
+            borderColor: "rgb(102, 0, 0)",
+            borderWidth: 1
+          }]
+        }
+    });
+
+    var pemasukan = parseFloat("{{totalPemasukan}}".replace(/,/g, ''))
+    var pengeluaran = parseFloat("{{totalPengeluaran}}".replace(/,/g, ''))
+    var balance = pemasukan - pengeluaran
+
+    if (balance < 0)
+        balance = 0
+
+    var ctx = document.getElementById('pie-chart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+        labels: ["Sisa Dana", "Pengeluaran"],
+        datasets: [{
+            label: "Population (millions)",
+            backgroundColor: ["rgb(63, 191, 136)", "rgb(206, 28, 54)"],
+            data: [balance, pengeluaran]
+        }]
+        },
+        options: {
+        title: {
+            display: true,
+            text: 'Grafik Pendapatan Pengeluaran Keseluruhan'
+        },
+        plugins: {
+            labels: {
+            // render 'label', 'value', 'percentage', 'image' or custom function, default is 'percentage'
+            render: 'percentage',
+
+            // precision for percentage, default is 0
+            precision: 0,
+
+            // identifies whether or not labels of value 0 are displayed, default is false
+            showZero: true,
+
+            // font size, default is defaultFontSize
+            fontSize: 24,
+
+            // font color, can be color array for each data or function for dynamic color, default is defaultFontColor
+            fontColor: 'black',
+
+            // font style, default is defaultFontStyle
+            fontStyle: 'normal',
+
+            // font family, default is defaultFontFamily
+            fontFamily: '"Lucida Console", Monaco, monospace'
+            }
+        }
+        }
+        });
+
+    </script>
 
 {% endblock %}

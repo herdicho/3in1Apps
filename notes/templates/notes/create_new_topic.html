@@ -4,7 +4,7 @@
 
 {% load crispy_forms_tags %}
 
-<div class="row">
+<div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card card-body mt-3">
             <form action="" method='POST'>
@@ -13,7 +13,10 @@
                     <div class="form-group col-md mb-0">
                       {{ form.topic|as_crispy_field}}
                     </div>
-                <input class="btn btn-info mt-3" type="submit" name="submit">
+                </div>
+                <div class="row">
+                    <input class="btn btn-info btn-md ml-3" type="submit" name="submit">
+                </div>
             </form>
         </div>
     </div>

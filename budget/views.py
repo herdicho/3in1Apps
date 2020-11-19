@@ -4,6 +4,7 @@ from .models import *
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .forms import BudgetForm
 from .serializers import BudgetSerializer
+from .filters import BudgetFilter
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -11,9 +12,9 @@ from rest_framework.response import Response
 # Create your views here.
 def dashboard(request):
    monthYear = MonthYear.objects.all()
-   actions = Budget.objects.all().order_by('-date_created')[:5]
+   actions = Budget.objects.all().order_by('-date_created')[:7]
 
-   paginator = Paginator(monthYear, 5)
+   paginator = Paginator(monthYear, 6)
    page = request.GET.get('page')
    try:
       monthYearPage = paginator.page(page)
@@ -29,7 +30,6 @@ def dashboard(request):
          form.save()
          return redirect('/budget/')
 
-   
    totalPemasukan = getTotalPemasukan()
    totalPengeluaran = getTotalPengeluaran()
    balance = totalPemasukan - totalPengeluaran
@@ -37,6 +37,18 @@ def dashboard(request):
    totalPemasukan = '{0:,}'.format(totalPemasukan)
    totalPengeluaran = '{0:,}'.format(totalPengeluaran)
    balance = '{0:,}'.format(balance)
+
+   monthYearList = []
+   for monthNow in monthYear:
+      monthYearList.append(monthNow.monthYear)
+
+   monthYearPengeluaran = []
+   for monthNow in monthYear:
+      monthYearPengeluaran.append(getTotalPemasukanPengeluaranPerMonthByMonthYearName(monthNow, "Pengeluaran"))
+
+   monthYearPemasukan = []
+   for monthNow in monthYear:
+      monthYearPemasukan.append(getTotalPemasukanPengeluaranPerMonthByMonthYearName(monthNow, "Pemasukan"))
 
    context = {
       'monthYear' : monthYear,
@@ -46,6 +58,9 @@ def dashboard(request):
       'totalPemasukan':totalPemasukan,
       'totalPengeluaran':totalPengeluaran,
       'balance':balance,
+      'monthYearList':monthYearList,
+      'monthYearPengeluaran':monthYearPengeluaran,
+      'monthYearPemasukan':monthYearPemasukan,
    }
 
    return render(request, 'budget/dashboard.html', context)
@@ -69,6 +84,20 @@ def getTotalPengeluaran():
 
    return totalPengeluaran
 
+def getTotalPemasukanPengeluaranPerMonthByMonthYearName(monthYearName, status):
+   idMonthYear = getIDMonthYearByMonthYearName(monthYearName)
+   monthYearAll = Budget.objects.filter(monthYear = idMonthYear)
+   monthYearPengeluaran = monthYearAll.filter(status = status)
+  
+   pengeluaran = 0
+   for month in monthYearPengeluaran:
+      pengeluaran += month.totalBiaya
+   
+   return pengeluaran
+
+def getIDMonthYearByMonthYearName(monthYearName):
+   idMonthYear = MonthYear.objects.get(monthYear = monthYearName)
+   return idMonthYear.id
 
 def actionUpdateFrontEnd(request, pk):
    budget = Budget.objects.get(id=pk)
@@ -100,15 +129,77 @@ def actionDeleteFrontEnd(request, pk):
 
 
 def actionDetailPerMonth(request, pk):
+   # get id details bulan yang dipih user
    monthYear = MonthYear.objects.get(id=pk)
+
+   # get semua list action sesuai bulan yang dipilih user
    listActions = Budget.objects.filter(monthYear=monthYear)
+
+   # get semua list action sesuai bulan yang dipilih user
+   listActionsFilter = Budget.objects.filter(monthYear=monthYear)
+
+   # filter data sesuai status (pemasukan / pengeluaran)
+   filterAction = BudgetFilter(request.GET, queryset=listActionsFilter)
+   listActionsFilter = filterAction.qs
+
+   # paginator
+   paginator = Paginator(listActionsFilter, 5)
+   page = request.GET.get('page', 1)
+   try:
+      listActionPage = paginator.page(page)
+   except PageNotAnInteger:
+      listActionPage = paginator.page(1)
+   except EmptyPage:
+      listActionPage = paginator.page(paginator.num_pages)
+
+   # GET total pemasukan, pengeluaran, balance per bulan   
+   totalPemasukan = getTotalPemasukanPerMonth(listActions)
+   totalPengeluaran = getTotalPengeluaranPerMonth(listActions)
+   balance = totalPemasukan - totalPengeluaran
+   
+   # format total pemasukan, pengeluaran, balance
+   totalPemasukan = '{0:,}'.format(totalPemasukan)
+   totalPengeluaran = '{0:,}'.format(totalPengeluaran)
+   balance = '{0:,}'.format(balance)
+
+   # form untuk create transaksi baru (di bulan tersebut)
+   form = BudgetForm(initial={'monthYear' : monthYear})
+   if request.method == 'POST':
+      form = BudgetForm(request.POST)
+      if form.is_valid():
+         form.save()
+         return redirect('/budget/detail/' + str(monthYear.id))
 
    context = {
       'monthYear' : monthYear,
-      'listActions' : listActions
+      'listActions' : listActions,
+      'totalPemasukan':totalPemasukan,
+      'totalPengeluaran':totalPengeluaran,
+      'balance':balance,
+      'form':form,
+      'listActionPage':listActionPage,
+      'filter':filterAction
    }
 
    return render(request, 'budget/detail_action.html', context)
+
+def getTotalPemasukanPerMonth(actionPerBulan):
+   daftarPemasukan = actionPerBulan.filter(status="Pemasukan")
+
+   totalPemasukan = 0
+   for pemasukan in daftarPemasukan.values_list('totalBiaya', flat=True):
+      totalPemasukan += pemasukan
+
+   return totalPemasukan
+
+def getTotalPengeluaranPerMonth(actionPerBulan):
+   daftarPengeluaran = actionPerBulan.filter(status="Pengeluaran")
+
+   totalPengeluaran = 0
+   for pengeluaran in daftarPengeluaran.values_list('totalBiaya', flat=True):
+      totalPengeluaran += pengeluaran
+
+   return totalPengeluaran
 
 
 @api_view(['GET'])
@@ -168,5 +259,4 @@ def actionDelete(request, pk):
    budget.delete()
 
    return Response("Data berhasil dihapus")
-
 

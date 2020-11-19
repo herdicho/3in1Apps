@@ -1,46 +1,199 @@
 {% extends 'budget/main.html' %}
+
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-md-8 mt-5">
-        <h3>List Detail {{monthYear}} </h3>
-        <table class="table table-bordered table-dark mt-4">
-            <thead>
-                <tr>
-                    <th scope="col">Aksi</th>
-                    <th scope="col">Bulan / Tahun</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Total Biaya</th>
-                    <th scope="col">Update</th>
-                    <th scope="col">Delete</th>
-                 </tr>
-            </thead>
-            <tbody>
-                {% for listAction in listActions %}
-                    {% if listAction.status == "Pemasukan" %}
-                        <tr class="table-success text-dark">
-                            <td>{{listAction.namaAksi}}</td>
-                            <td>{{listAction.monthYear}}</td>
-                            <td>{{listAction.status}}</td>
-                            <td>{{listAction.totalBiaya}}</td>
-                            <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-info">Update</a></td>
-                            <td><a href="{% url 'action_delete_frontend' listAction.id %}" class="btn btn-danger">Delete</a></td>
-                            </tr> 
+{% load crispy_forms_tags %}
+
+{% load myapp_extras %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10 mt-4">
+            <h5 style="text-align: left;">Total Pemasukan Pengeluaran dan Balance {{monthYear}}</h5>
+            <div class="row ml-3 mt-4">
+                <div class="col">
+                    <div class="card text-white bg-success mb-3" style="max-width: 15rem; min-width: 200px;">
+                    <div class="card-header">Total Pemasukan</div>
+                    <div class="card-body">
+                        <h5>Rp. {{totalPemasukan}}</h5>
+                    </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card text-white bg-danger mb-3" style="max-width: 15rem; min-width: 200px;">
+                    <div class="card-header">Total Pengeluaran</div>
+                    <div class="card-body">
+                        <h5>Rp. {{totalPengeluaran}}</h5>
+                    </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card text-white bg-primary mb-3" style="max-width: 15rem; min-width: 200px;">
+                    <div class="card-header">Balance</div>
+                    <div class="card-body">
+                        <h5>Rp. {{balance}}</h5>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+    
+    <hr>
+    <div class="row justify-content-center">
+        <div class="col-md-5 mt-2">
+            <div class="card card-body bg-light mt-3 mb-3" id="cardAction">
+                <h5>Tambah Pemasukan / Pengeluaran</h5>
+                <hr>
+                <form action="" method='POST'>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <input class="btn btn-info mt-3" type="submit" name="submit">
+                </form>
+            </div>
+        </div>
+        <div class="col-md-5 mt-2">
+            <div><canvas id="myChart" width="400" height="400"></canvas></div>    
+        </div>
+    </div> 
+    
+    <hr>
+    <div class="row justify-content-center">
+        <div class="col-md-10 mt-3 mb-0">
+            <div class="row">
+                <div class="col">
+                    <h2 style="text-align: center; margin-top: 40px;">List Detail {{monthYear}} </h2>
+                </div>
+                <div class="col">
+                    <form method="get">
+                        <div class="form-row">
+                            <div class="form-group col-md-5 mb-0">
+                                {{ filter.form|crispy }}
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" type="submit">Search</button>                      
+                        <a href="{% url 'action_detail' monthYear.id %}" class="btn btn-primary ml-4">Clear</a>
+                    </form>
+                </div>
+            </div>
+        
+            <div class="row">
+                <table class="table table-bordered table-dark mt-4">
+                    <thead>
+                        <tr>
+                            <th scope="col">Aksi</th>
+                            <th scope="col">Bulan / Tahun</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Total Biaya</th>
+                            <th scope="col">Update</th>
+                            <th scope="col">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for listAction in listActionPage %}
+                            {% if listAction.status == "Pemasukan" %}
+                                <tr class="table-success text-dark">
+                                    <td>{{listAction.namaAksi}}</td>
+                                    <td>{{listAction.monthYear}}</td>
+                                    <td>{{listAction.status}}</td>
+                                    <td>{{listAction.totalBiaya}}</td>
+                                    <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-info">Update</a></td>
+                                    <td><a href="{% url 'action_delete_frontend' listAction.id %}" class="btn btn-danger">Delete</a></td>
+                                    </tr> 
+                            {% else %}
+                                <tr class="table-danger text-dark">
+                                    <td>{{listAction.namaAksi}}</td>
+                                    <td>{{listAction.monthYear}}</td>
+                                    <td>{{listAction.status}}</td>
+                                    <td>{{listAction.totalBiaya}}</td>
+                                    <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-info">Update</a></td>
+                                    <td><a href="{% url 'action_delete_frontend' listAction.id %}" class="btn btn-danger">Delete</a></td>
+                                </tr> 
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+            </table>
+            
+            {% if listActionPage.has_other_pages %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-left">
+                    {% if listActionPage.has_previous %}
+                        <li class="page-item"><a class="page-link" href="{% my_url listActionPage.previous_page_number 'page' request.GET.urlencode %}">&laquo;</a></li>
                     {% else %}
-                        <tr class="table-danger text-dark">
-                            <td>{{listAction.namaAksi}}</td>
-                            <td>{{listAction.monthYear}}</td>
-                            <td>{{listAction.status}}</td>
-                            <td>{{listAction.totalBiaya}}</td>
-                            <td><a href="{% url 'action_update_frontend' listAction.id %}" class="btn btn-info">Update</a></td>
-                            <td><a href="{% url 'action_delete_frontend' listAction.id %}" class="btn btn-danger">Delete</a></td>
-                        </tr> 
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&laquo;</span></a></li>
                     {% endif %}
-              {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                    {% for i in listActionPage.paginator.page_range %}
+                    {% if listActionPage.number == i %}
+                        <li class="page-item active"><a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="{% my_url i 'page' request.GET.urlencode %}">{{ i }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if listActionPage.has_next %}
+                        <li class="page-item"><a class="page-link" href="{% my_url listActionPage.next_page_number 'page' request.GET.urlencode %}">&raquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#"><span>&raquo;</span></a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            </div>      
+        </div>
+               
+    </div>  
 </div>
 
+
+<script type="text/javascript">
+    var pemasukan = parseFloat("{{totalPemasukan}}".replace(/,/g, ''))
+    var pengeluaran = parseFloat("{{totalPengeluaran}}".replace(/,/g, ''))
+    var balance = pemasukan - pengeluaran
+
+    if (balance < 0)
+        balance = 0
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+        labels: ["Sisa Dana", "Pengeluaran"],
+        datasets: [{
+            label: "Population (millions)",
+            backgroundColor: ["rgb(63, 191, 136)", "rgb(206, 28, 54)"],
+            data: [balance, pengeluaran]
+        }]
+        },
+        options: {
+        title: {
+            display: true,
+            text: 'Grafik Pendapatan Pengeluaran {{monthYear}}'
+        },
+        plugins: {
+            labels: {
+            // render 'label', 'value', 'percentage', 'image' or custom function, default is 'percentage'
+            render: 'percentage',
+
+            // precision for percentage, default is 0
+            precision: 0,
+
+            // identifies whether or not labels of value 0 are displayed, default is false
+            showZero: true,
+
+            // font size, default is defaultFontSize
+            fontSize: 24,
+
+            // font color, can be color array for each data or function for dynamic color, default is defaultFontColor
+            fontColor: 'black',
+
+            // font style, default is defaultFontStyle
+            fontStyle: 'normal',
+
+            // font family, default is defaultFontFamily
+            fontFamily: '"Lucida Console", Monaco, monospace'
+            }
+        }
+        }
+        });
+</script>
 
 {% endblock %}

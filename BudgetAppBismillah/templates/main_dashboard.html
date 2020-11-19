@@ -1,0 +1,27 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid mt-5 pt-5">
+        <div class="row justify-content-center">
+                <div class="col-md-10 mt-5 mb-0">
+                        <div style="text-align: center; padding: 50px;" class="row my-auto">
+                                <div style="margin-right: 100px" class="col">
+                                        <a href="{% url 'home_notes' %}"><i class="far fa-clipboard fa-8x"></i></a>
+                                        <h3 style="font-family: Comic Sans MS, Comic Sans, cursive; margin-top: 20px;">NOTES</h3>
+                                </div>
+                                <div class="col">
+                                        <a href="{% url 'dashboard_budget' %}"><i class="fas fa-money-check-alt fa-8x"></i></a>
+                                        <h3 style="font-family: Comic Sans MS, Comic Sans, cursive; margin-top: 20px;">BUDGET</h3>
+                                </div>
+                                <div style="margin-left: 100px" class="col">
+                                        <a href="#"><i class="fas fa-list fa-8x"></i></i></a>
+                                        <h3 style="font-family: Comic Sans MS, Comic Sans, cursive; margin-top: 20px;">TO DO LIST (Coming Soon)</h3>
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>
+
+{% endblock %}
